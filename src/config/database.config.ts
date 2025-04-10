@@ -1,7 +1,7 @@
 import { registerAs } from '@nestjs/config';
-import { DataSource, DataSourceOptions } from 'typeorm';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-export const databaseConfig = registerAs('database', (): DataSourceOptions => ({
+export const databaseConfig = registerAs('database', (): TypeOrmModuleOptions => ({
   type: 'postgres',
   host: process.env.POSTGRES_HOST || 'localhost',
   port: parseInt(process.env.POSTGRES_PORT || '5432'),
@@ -12,6 +12,4 @@ export const databaseConfig = registerAs('database', (): DataSourceOptions => ({
   migrations: [__dirname + '/../migrations/**/*{.ts,.js}'],
   synchronize: process.env.NODE_ENV === 'development',
   logging: process.env.NODE_ENV === 'development',
-}));
-
-export const dataSource = new DataSource(databaseConfig()); 
+})); 

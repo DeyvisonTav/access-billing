@@ -11,8 +11,7 @@ export class BillsRepository {
   ) {}
 
   async findAll(filters: any): Promise<Bill[]> {
-    const query = this.repository.createQueryBuilder('bill')
-      .leftJoinAndSelect('bill.lote', 'lote');
+    const query = this.repository.createQueryBuilder('bill');
 
     if (filters.nome) {
       query.andWhere('bill.nome_sacado ILIKE :nome', { nome: `%${filters.nome}%` });

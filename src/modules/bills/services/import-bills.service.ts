@@ -51,7 +51,7 @@ export class ImportBillsService {
 
     const bill = new Bill();
     bill.nome_sacado = row.nome;
-    bill.idLote = lot.id;
+    bill.id_lote = lot.id;
     bill.valor = row.valor;
     bill.linha_digitavel = row.linha_digitavel;
     bill.ativo = true;

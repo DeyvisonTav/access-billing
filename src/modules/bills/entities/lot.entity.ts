@@ -1,5 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
-import { Bill } from './bill.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity('lotes')
 export class Lot {
@@ -12,9 +11,6 @@ export class Lot {
   @Column({ default: true })
   ativo: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'criado_em' })
   criado_em: Date;
-
-  @OneToMany(() => Bill, (bill) => bill.lote)
-  boletos: Bill[];
 } 

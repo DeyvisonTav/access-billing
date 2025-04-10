@@ -45,24 +45,27 @@ export class ImportBillsService {
           }
         })
         .on('end', async () => {
-          if (errors.length > 0) {
-            throw new BusinessException(
-              `Erros encontrados durante a importação:\n${errors.join('\n')}`,
-            );
-          }
-
-          if (bills.length === 0) {
-            throw new BusinessException('Nenhum boleto válido encontrado para importação');
-          }
-
           try {
-            const savedBills = await this.billRepository.save(bills);
-            return resolve(savedBills);
-          } catch (error) {
-            if (error.code === '23503') { 
-              throw new BusinessException('Erro de integridade referencial. Verifique se todos os lotes existem.');
+            if (errors.length > 0) {
+              throw new BusinessException(
+                `Erros encontrados durante a importação:\n${errors.join('\n')}`,
+              );
             }
-            throw new BusinessException(`Erro ao salvar boletos: ${error.message}`);
+
+            if (bills.length === 0) {
+              throw new BusinessException('Nenhum boleto válido encontrado para importação');
+            }
+
+            const savedBills = await this.billRepository.save(bills);
+            resolve(savedBills);
+          } catch (error) {
+            if (error instanceof BusinessException) {
+              reject(error);
+            } else if (error.code === '23503') {
+              reject(new BusinessException('Erro de integridade referencial. Verifique se todos os lotes existem.'));
+            } else {
+              reject(new BusinessException(`Erro ao salvar boletos: ${error.message}`));
+            }
           }
         });
     });

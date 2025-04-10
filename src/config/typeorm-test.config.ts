@@ -1,10 +1,5 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
-import * as dotenv from 'dotenv';
 import * as path from 'path';
-
-dotenv.config();
-
-const isTest = process.env.NODE_ENV === 'test';
 
 const config: DataSourceOptions = {
   type: 'postgres',
@@ -12,11 +7,12 @@ const config: DataSourceOptions = {
   port: parseInt(process.env.POSTGRES_PORT || '5432'),
   username: process.env.POSTGRES_USER || 'docker',
   password: process.env.POSTGRES_PASSWORD || 'docker',
-  database: process.env.POSTGRES_DB || 'access-billing',
+  database: process.env.POSTGRES_DB || 'access-billing-test',
   entities: [path.join(__dirname, '../**/*.entity{.ts,.js}')],
   migrations: [path.join(__dirname, '../migrations/*{.ts,.js}')],
-  synchronize: false,
-  logging: true,
+  synchronize: true,
+  dropSchema: true,
+  logging: false,
 };
 
-export const dataSource = new DataSource(config); 
+export const testDataSource = new DataSource(config); 

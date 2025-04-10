@@ -43,8 +43,11 @@ export class PdfBillsService {
         lote: lotsMap.get(bill.id_lote)
       }));
 
-      return this.pdfHandler.createPdfReport(billsWithLots);
+      return await this.pdfHandler.createPdfReport(billsWithLots);
     } catch (error) {
+      if (error instanceof BusinessException) {
+        throw error;
+      }
       throw new BusinessException('Erro ao gerar relatório');
     }
   }

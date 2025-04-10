@@ -13,8 +13,8 @@ export class BillsRepository {
   async findAll(filters: any): Promise<Bill[]> {
     const query = this.repository.createQueryBuilder('bill');
 
-    if (filters.nome) {
-      query.andWhere('bill.nome_sacado ILIKE :nome', { nome: `%${filters.nome}%` });
+    if (filters.nome_sacado) {
+      query.andWhere('bill.nome_sacado ILIKE :nome_sacado', { nome_sacado: `%${filters.nome_sacado}%` });
     }
 
     if (filters.valor_inicial) {

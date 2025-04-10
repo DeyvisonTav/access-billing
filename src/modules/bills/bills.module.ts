@@ -24,6 +24,10 @@ import { PdfHandlerProvider } from '../../shared/providers/pdf-handler.provider'
     LotsRepository,
     FileUploadProvider,
     PdfHandlerProvider,
+    {
+      provide: 'PDF_HANDLER',
+      useExisting: PdfHandlerProvider,
+    },
   ],
   exports: [ImportBillsService, ListBillsService, PdfBillsService],
 })

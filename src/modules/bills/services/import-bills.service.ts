@@ -19,33 +19,58 @@ export class ImportBillsService {
   ) {}
 
   async importFromCsv(file: Express.Multer.File): Promise<Bill[]> {
+    console.log('Iniciando importação do CSV');
+    console.log('Conteúdo do arquivo:', file.buffer.toString());
+    
     const bills: Bill[] = [];
     const stream = Readable.from(file.buffer);
     const processedUnits = new Set<string>();
     const errors: string[] = [];
+    const rowPromises: Promise<void>[] = [];
 
     return new Promise((resolve, reject) => {
       stream
-        .pipe(parse({ headers: true, delimiter: ';' }))
-        .on('error', (error) => reject(error))
-        .on('data', async (row: ImportBillDto) => {
-          try {
-            if (processedUnits.has(row.unidade)) {
-              errors.push(`Unidade ${row.unidade} duplicada no arquivo`);
-              return;
-            }
-            processedUnits.add(row.unidade);
+        .pipe(parse({ headers: true, delimiter: ';', trim: true }))
+        .on('error', (error) => {
+          console.error('Erro ao fazer parse do CSV:', error);
+          reject(error);
+        })
+        .on('data', (row: ImportBillDto) => {
+          console.log('Processando linha:', row);
+          const promise = (async () => {
+            try {
+              // Limpa os campos da linha
+              Object.keys(row).forEach(key => {
+                if (typeof row[key] === 'string') {
+                  row[key] = row[key].trim();
+                }
+              });
 
-            const bill = await this.processRow(row);
-            if (bill) {
-              bills.push(bill);
+              if (processedUnits.has(row.unidade)) {
+                errors.push(`Unidade ${row.unidade} duplicada no arquivo`);
+                return;
+              }
+              processedUnits.add(row.unidade);
+
+              const bill = await this.processRow(row);
+              if (bill) {
+                bills.push(bill);
+              }
+            } catch (error) {
+              console.error('Erro ao processar linha:', error);
+              errors.push(`Erro ao processar linha da unidade ${row.unidade}: ${error.message}`);
             }
-          } catch (error) {
-            errors.push(`Erro ao processar linha da unidade ${row.unidade}: ${error.message}`);
-          }
+          })();
+          rowPromises.push(promise);
         })
         .on('end', async () => {
+          console.log('Finalizou leitura do CSV');
           try {
+            await Promise.all(rowPromises);
+            
+            console.log('Bills:', bills);
+            console.log('Errors:', errors);
+
             if (errors.length > 0) {
               throw new BusinessException(
                 `Erros encontrados durante a importação:\n${errors.join('\n')}`,
@@ -59,6 +84,7 @@ export class ImportBillsService {
             const savedBills = await this.billRepository.save(bills);
             resolve(savedBills);
           } catch (error) {
+            console.error('Erro ao salvar boletos:', error);
             if (error instanceof BusinessException) {
               reject(error);
             } else if (error.code === '23503') {
@@ -72,24 +98,36 @@ export class ImportBillsService {
   }
 
   private async processRow(row: ImportBillDto): Promise<Bill | null> {
+    console.log('Processando row:', row);
+    
     if (!/^\d{1,4}$/.test(row.unidade)) {
       throw new BusinessException(`Formato inválido para a unidade: ${row.unidade}`);
     }
 
     const lotName = LotMapper.formatUnitToLotName(row.unidade);
-    const lot = await this.lotRepository.findOne({
-      where: { nome: lotName, ativo: true },
+    console.log('Nome do lote formatado:', lotName);
+    
+    let lot = await this.lotRepository.findOne({
+      where: { nome: lotName },
     });
 
+    console.log('Lote encontrado:', lot);
+
+    // Se o lote não existir, cria automaticamente
     if (!lot) {
-      throw new BusinessException(`Lote não encontrado ou inativo para a unidade: ${row.unidade}`);
+      console.log('Criando novo lote');
+      lot = await this.lotRepository.save({
+        nome: lotName,
+        ativo: true,
+      });
+      console.log('Novo lote criado:', lot);
     }
 
     if (row.valor <= 0) {
       throw new BusinessException(`Valor inválido para a unidade ${row.unidade}: ${row.valor}`);
     }
 
-    if (!/^\d{47}$/.test(row.linha_digitavel)) {
+    if (!/^\d+$/.test(row.linha_digitavel)) {
       throw new BusinessException(`Formato inválido para a linha digitável da unidade ${row.unidade}`);
     }
 
@@ -100,6 +138,7 @@ export class ImportBillsService {
     bill.linha_digitavel = row.linha_digitavel;
     bill.ativo = true;
 
+    console.log('Bill criado:', bill);
     return bill;
   }
 } 

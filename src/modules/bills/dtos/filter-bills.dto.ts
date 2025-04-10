@@ -6,7 +6,7 @@ export class FilterBillsDto {
   @ApiProperty({ required: false, description: 'Nome do sacado' })
   @IsOptional()
   @IsString()
-  nome?: string;
+  nome_sacado?: string;
 
   @ApiProperty({ required: false, description: 'Valor inicial do boleto', type: Number })
   @IsOptional()

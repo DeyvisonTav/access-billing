@@ -16,14 +16,19 @@ export class ImportBillDto {
 
   @ApiProperty({ description: 'Valor do boleto', type: Number })
   @IsNotEmpty({ message: 'O valor é obrigatório' })
-  @Transform(({ value }) => Number(value))
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return Number(value.replace(',', '.'));
+    }
+    return Number(value);
+  })
   @IsNumber({}, { message: 'O valor deve ser um número' })
   @Min(0.01, { message: 'O valor deve ser maior que zero' })
   valor: number;
 
-  @ApiProperty({ description: 'Linha digitável do boleto (47 dígitos)' })
+  @ApiProperty({ description: 'Linha digitável do boleto' })
   @IsNotEmpty({ message: 'A linha digitável é obrigatória' })
   @IsString({ message: 'A linha digitável deve ser uma string' })
-  @Matches(/^\d{47}$/, { message: 'A linha digitável deve conter exatamente 47 dígitos' })
+  @Matches(/^\d+$/, { message: 'A linha digitável deve conter apenas dígitos' })
   linha_digitavel: string;
 } 

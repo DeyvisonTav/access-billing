@@ -108,7 +108,7 @@ describe('ImportBillsService', () => {
       const mockFile = {
         buffer: Buffer.from(
           'nome;unidade;valor;linha_digitavel\n' +
-            'João Silva;1001;100,50;1234567890123456789012345678901234567890123456',
+            'João Silva;1001;100,50;1234567890123456789012345678901234567890123456A',
         ),
       };
 

@@ -5,6 +5,7 @@ import { Bill } from '../entities/bill.entity';
 import { FilterBillsDto } from '../dtos/filter-bills.dto';
 import { join } from 'path';
 import { writeFile, mkdir } from 'fs/promises';
+import { BusinessException } from '../../../core/exceptions/business-exception';
 
 @Injectable()
 export class PdfBillsService {
@@ -20,12 +21,12 @@ export class PdfBillsService {
     const pages = await this.pdfHandler.splitPdf(buffer);
 
     if (pages.length !== bills.length) {
-      throw new Error(
+      throw new BusinessException(
         `Número de páginas (${pages.length}) não corresponde ao número de boletos (${bills.length})`,
       );
     }
 
-    const pdfDir = join(process.cwd(), 'pdfs');
+    const pdfDir = join(process.cwd(), 'uploads');
     await mkdir(pdfDir, { recursive: true });
 
     for (let i = 0; i < pages.length; i++) {

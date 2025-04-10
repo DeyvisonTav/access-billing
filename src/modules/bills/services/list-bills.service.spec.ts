@@ -34,7 +34,7 @@ describe('ListBillsService', () => {
   describe('findAll', () => {
     it('should return bills successfully', async () => {
       const mockFilters: FilterBillsDto = {
-        nome: 'João',
+        nome_sacado: 'João',
         valor_inicial: 100,
         valor_final: 200,
         id_lote: 1,
@@ -61,7 +61,7 @@ describe('ListBillsService', () => {
 
     it('should throw error when repository fails', async () => {
       const mockFilters: FilterBillsDto = {
-        nome: 'João',
+        nome_sacado: 'João',
       };
 
       mockBillsRepository.findAll.mockRejectedValue(new Error('Database error'));

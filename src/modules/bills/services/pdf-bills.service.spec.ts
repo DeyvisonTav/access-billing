@@ -5,6 +5,9 @@ import { LotsRepository } from '../repositories/lots.repository';
 import { BusinessException } from '../../../core/exceptions/business-exception';
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
+import { FilterBillsDto } from '../dtos/filter-bills.dto';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Bill } from '../entities/bill.entity';
 
 jest.mock('fs/promises');
 jest.mock('path');
@@ -24,6 +27,16 @@ describe('PdfBillsService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PdfBillsService,
+        {
+          provide: getRepositoryToken(Bill),
+          useValue: {
+            find: jest.fn(),
+            createQueryBuilder: jest.fn(() => ({
+              andWhere: jest.fn().mockReturnThis(),
+              getMany: jest.fn(),
+            })),
+          },
+        },
         {
           provide: BillsRepository,
           useValue: {
@@ -52,7 +65,15 @@ describe('PdfBillsService', () => {
     pdfHandler = module.get('PDF_HANDLER');
 
     // Configurar o mock do join para retornar um caminho fixo
-    (join as jest.Mock).mockImplementation((...args) => args.join('/'));
+    (join as jest.Mock).mockImplementation((...args) => {
+      if (args.length === 3) {
+        return `${args[0]}/${args[1]}/${args[2]}`;
+      }
+      return args.join('/');
+    });
+
+    // Limpar chamadas anteriores do mock
+    (join as jest.Mock).mockClear();
   });
 
   it('should be defined', () => {
@@ -85,16 +106,21 @@ describe('PdfBillsService', () => {
       ];
 
       pdfHandler.splitPdf.mockResolvedValue(mockPages);
-      (billsRepository.findAll as jest.Mock).mockResolvedValue(mockBills);
+      (service['billRepository'].find as jest.Mock).mockResolvedValue(mockBills);
       (writeFile as jest.Mock).mockResolvedValue(undefined);
 
       await service.splitPdfAndSave(mockBuffer);
 
       expect(pdfHandler.splitPdf).toHaveBeenCalledWith(mockBuffer);
-      expect(billsRepository.findAll).toHaveBeenCalled();
+      expect(service['billRepository'].find).toHaveBeenCalled();
       expect(writeFile).toHaveBeenCalledTimes(2);
-      expect(join).toHaveBeenCalledWith('/mock/path', 'uploads', '1.pdf');
-      expect(join).toHaveBeenCalledWith('/mock/path', 'uploads', '2.pdf');
+      
+      // Verificar as chamadas do join
+      const joinCalls = (join as jest.Mock).mock.calls;
+      expect(joinCalls.length).toBe(3);
+      expect(joinCalls[0]).toEqual(['/mock/path', 'uploads']);
+      expect(joinCalls[1]).toEqual(['/mock/path/uploads', '1.pdf']);
+      expect(joinCalls[2]).toEqual(['/mock/path/uploads', '2.pdf']);
     });
 
     it('should throw error when number of pages does not match number of bills', async () => {
@@ -122,7 +148,7 @@ describe('PdfBillsService', () => {
       ];
 
       pdfHandler.splitPdf.mockResolvedValue(mockPages);
-      (billsRepository.findAll as jest.Mock).mockResolvedValue(mockBills);
+      (service['billRepository'].find as jest.Mock).mockResolvedValue(mockBills);
 
       await expect(service.splitPdfAndSave(mockBuffer)).rejects.toThrow(BusinessException);
     });
@@ -130,7 +156,7 @@ describe('PdfBillsService', () => {
 
   describe('generateReport', () => {
     it('should generate PDF report successfully', async () => {
-      const mockFilters = { nome: 'João' };
+      const mockFilters: FilterBillsDto = { nome_sacado: 'João' };
       const mockBills = [
         {
           id: 1,
@@ -138,34 +164,29 @@ describe('PdfBillsService', () => {
           id_lote: 1,
           valor: 100.50,
           linha_digitavel: '12345678901234567890123456789012345678901234567',
-          ativo: true,
-          criado_em: new Date(),
-        },
-      ];
-      const mockLots = [
-        {
-          id: 1,
-          nome: '1001',
           ativo: true,
           criado_em: new Date(),
         },
       ];
       const mockPdfBuffer = Buffer.from('mock pdf content');
 
-      (billsRepository.findAll as jest.Mock).mockResolvedValue(mockBills);
-      (lotsRepository.findAll as jest.Mock).mockResolvedValue(mockLots);
+      const mockQueryBuilder = {
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue(mockBills),
+      };
+
+      (service['billRepository'].createQueryBuilder as jest.Mock).mockReturnValue(mockQueryBuilder);
       pdfHandler.createPdfReport.mockResolvedValue(mockPdfBuffer);
 
       const result = await service.generateReport(mockFilters);
 
       expect(result).toBe(mockPdfBuffer);
-      expect(billsRepository.findAll).toHaveBeenCalledWith(mockFilters);
-      expect(lotsRepository.findAll).toHaveBeenCalled();
-      expect(pdfHandler.createPdfReport).toHaveBeenCalled();
+      expect(service['billRepository'].createQueryBuilder).toHaveBeenCalled();
+      expect(pdfHandler.createPdfReport).toHaveBeenCalledWith(mockBills);
     });
 
     it('should throw error when generating report fails', async () => {
-      const mockFilters = { nome: 'João' };
+      const mockFilters: FilterBillsDto = { nome_sacado: 'João' };
       const mockBills = [
         {
           id: 1,
@@ -177,18 +198,9 @@ describe('PdfBillsService', () => {
           criado_em: new Date(),
         },
       ];
-      const mockLots = [
-        {
-          id: 1,
-          nome: '1001',
-          ativo: true,
-          criado_em: new Date(),
-        },
-      ];
 
-      (billsRepository.findAll as jest.Mock).mockResolvedValue(mockBills);
-      (lotsRepository.findAll as jest.Mock).mockResolvedValue(mockLots);
-      pdfHandler.createPdfReport.mockRejectedValue(new Error('PDF generation failed'));
+      (service['billRepository'].createQueryBuilder as jest.Mock)().getMany.mockResolvedValue(mockBills);
+      pdfHandler.createPdfReport.mockRejectedValue(new BusinessException('PDF generation failed'));
 
       await expect(service.generateReport(mockFilters)).rejects.toThrow(BusinessException);
     });

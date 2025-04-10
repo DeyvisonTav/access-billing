@@ -19,9 +19,6 @@ export class ImportBillsService {
   ) {}
 
   async importFromCsv(file: Express.Multer.File): Promise<Bill[]> {
-    console.log('Iniciando importação do CSV');
-    console.log('Conteúdo do arquivo:', file.buffer.toString());
-    
     const bills: Bill[] = [];
     const stream = Readable.from(file.buffer);
     const processedUnits = new Set<string>();
@@ -32,11 +29,9 @@ export class ImportBillsService {
       stream
         .pipe(parse({ headers: true, delimiter: ';', trim: true }))
         .on('error', (error) => {
-          console.error('Erro ao fazer parse do CSV:', error);
           reject(error);
         })
         .on('data', (row: ImportBillDto) => {
-          console.log('Processando linha:', row);
           const promise = (async () => {
             try {
               // Limpa os campos da linha
@@ -57,20 +52,15 @@ export class ImportBillsService {
                 bills.push(bill);
               }
             } catch (error) {
-              console.error('Erro ao processar linha:', error);
               errors.push(`Erro ao processar linha da unidade ${row.unidade}: ${error.message}`);
             }
           })();
           rowPromises.push(promise);
         })
         .on('end', async () => {
-          console.log('Finalizou leitura do CSV');
           try {
             await Promise.all(rowPromises);
             
-            console.log('Bills:', bills);
-            console.log('Errors:', errors);
-
             if (errors.length > 0) {
               throw new BusinessException(
                 `Erros encontrados durante a importação:\n${errors.join('\n')}`,
@@ -84,7 +74,6 @@ export class ImportBillsService {
             const savedBills = await this.billRepository.save(bills);
             resolve(savedBills);
           } catch (error) {
-            console.error('Erro ao salvar boletos:', error);
             if (error instanceof BusinessException) {
               reject(error);
             } else if (error.code === '23503') {
@@ -98,29 +87,22 @@ export class ImportBillsService {
   }
 
   private async processRow(row: ImportBillDto): Promise<Bill | null> {
-    console.log('Processando row:', row);
-    
     if (!/^\d{1,4}$/.test(row.unidade)) {
       throw new BusinessException(`Formato inválido para a unidade: ${row.unidade}`);
     }
 
     const lotName = LotMapper.formatUnitToLotName(row.unidade);
-    console.log('Nome do lote formatado:', lotName);
     
     let lot = await this.lotRepository.findOne({
       where: { nome: lotName },
     });
 
-    console.log('Lote encontrado:', lot);
-
     // Se o lote não existir, cria automaticamente
     if (!lot) {
-      console.log('Criando novo lote');
       lot = await this.lotRepository.save({
         nome: lotName,
         ativo: true,
       });
-      console.log('Novo lote criado:', lot);
     }
 
     if (row.valor <= 0) {
@@ -138,7 +120,6 @@ export class ImportBillsService {
     bill.linha_digitavel = row.linha_digitavel;
     bill.ativo = true;
 
-    console.log('Bill criado:', bill);
     return bill;
   }
 } 

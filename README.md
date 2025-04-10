@@ -1,98 +1,187 @@
+# Access Billing - Sistema de Gerenciamento de Boletos (Green Acesso)
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Descrição
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Sistema de gerenciamento de boletos para condomínios, desenvolvido com NestJS. O sistema permite a importação de boletos via arquivo CSV, gerenciamento de lotes, geração de relatórios em PDF e distribuição de boletos individuais.
 
-## Description
+## Funcionalidades
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- 🏢 Gerenciamento de Lotes
+- 📄 Importação de Boletos via CSV
+- 📊 Geração de Relatórios em PDF
+- 📦 Distribuição Automática de Boletos
+- 🔍 Filtros Avançados de Busca
+- 🛡️ Validação de Dados
+- 🧪 Testes Automatizados
 
-## Project setup
+## Requisitos
 
+- Node.js (v16 ou superior)
+- Docker e Docker Compose
+- PostgreSQL
+
+## Configuração do Ambiente
+
+1. Clone o repositório:
 ```bash
-$ npm install
+git clone https://github.com/seu-usuario/access-billing.git
+cd access-billing
 ```
 
-## Compile and run the project
-
+2. Instale as dependências:
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
-
+3. Configure as variáveis de ambiente:
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+cp .env.example .env
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+4. Inicie o banco de dados com Docker:
 ```bash
-$ npm install -g mau
-$ mau deploy
+docker-compose up -d
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+5. Execute as migrações:
+```bash
+npm run migration:run
+```
 
-## Resources
+## Estrutura do Projeto
 
-Check out a few resources that may come in handy when working with NestJS:
+```
+src/
+├── modules/
+│   └── bills/
+│       ├── controllers/
+│       ├── services/
+│       ├── repositories/
+│       ├── entities/
+│       └── dtos/
+├── migrations/
+├── shared/
+│   ├── interfaces/
+│   ├── providers/
+│   └── utils/
+└── config/
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Endpoints
 
-## Support
+### Boletos
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- `POST /bills/import/csv` - Importa boletos via arquivo CSV
+- `POST /bills/pdf` - Processa PDF com múltiplos boletos
+- `GET /bills` - Lista boletos com filtros
+  - Parâmetros:
+    - `nome`: Filtro por nome do sacado
+    - `valor_inicial`: Valor mínimo
+    - `valor_final`: Valor máximo
+    - `id_lote`: ID do lote
+    - `relatorio`: 1 para gerar relatório em PDF
 
-## Stay in touch
+## Banco de Dados
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Tabelas
 
-## License
+#### Lotes
+```sql
+CREATE TABLE lotes (
+    id INT NOT NULL PRIMARY KEY,
+    nome VARCHAR(100),
+    ativo BOOLEAN,
+    criado_em TIMESTAMP
+);
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+#### Boletos
+```sql
+CREATE TABLE boletos (
+    id INT NOT NULL PRIMARY KEY,
+    nome_sacado VARCHAR(255),
+    id_lote INT NOT NULL,
+    valor DECIMAL,
+    linha_digitavel VARCHAR(255),
+    ativo BOOLEAN,
+    criado_em TIMESTAMP,
+    FOREIGN KEY (id_lote) REFERENCES lotes(id)
+);
+```
+
+## Executando o Projeto
+
+### Desenvolvimento
+```bash
+npm run start:dev
+```
+
+### Produção
+```bash
+npm run build
+npm run start:prod
+```
+
+### Testes
+```bash
+# Testes unitários e integração
+npm run test:watch
+
+# Cobertura de testes
+npm run test:cov
+```
+
+## Variáveis de Ambiente
+
+```env
+# Database
+POSTGRES_USER=docker
+POSTGRES_PASSWORD=docker
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_DB=access-billing
+
+# Server
+PORT=3000
+
+# Node
+NODE_ENV=development
+```
+
+## Docker
+
+O projeto utiliza Docker para o banco de dados PostgreSQL. O arquivo `docker-compose.yml` configura:
+
+- PostgreSQL com volume persistente
+- Credenciais padrão (pode ser alterado no .env)
+- Porta 5432 exposta
+
+Para iniciar:
+```bash
+docker-compose up -d
+```
+
+Para parar:
+```bash
+docker-compose down
+```
+
+## Contribuição
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## Licença
+
+Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+## Suporte
+
+Para suporte, envie um email para seu-email@exemplo.com ou abra uma issue no GitHub.

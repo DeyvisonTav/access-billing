@@ -2,10 +2,12 @@ import { testDataSource } from '../src/config/typeorm-test.config';
 
 beforeAll(async () => {
   try {
+   
     await testDataSource.initialize();
-    console.log('Test database connection established successfully');
-  } catch (error) {
-    console.error('Failed to initialize test database:', error);
+    const migrations = await testDataSource.query('SELECT * FROM migrations');
+    console.log(migrations);
+  } catch (error) {   
+    console.error('Falha ao inicializar o banco de dados de teste:', error);
     throw error;
   }
 });
@@ -13,9 +15,8 @@ beforeAll(async () => {
 afterAll(async () => {
   try {
     await testDataSource.destroy();
-    console.log('Test database connection closed successfully');
   } catch (error) {
-    console.error('Failed to close test database connection:', error);
+    console.error('Falha ao encerrar a conexão com o banco de dados de teste:', error);
     throw error;
   }
 }); 

@@ -12,8 +12,15 @@ const config: DataSourceOptions = {
   migrations: [path.join(__dirname, '../migrations/*{.ts,.js}')],
   synchronize: false,
   dropSchema: true,
-  logging: true,
+  logging: ['error', 'warn', 'schema', 'migration'],
   migrationsRun: true,
+  connectTimeoutMS: 10000, 
+  maxQueryExecutionTime: 10000, 
+  extra: {
+    ssl: false,
+    max: 20, 
+    idleTimeoutMillis: 30000, 
+  },
 };
 
 export const testDataSource = new DataSource(config); 

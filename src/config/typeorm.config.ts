@@ -18,6 +18,7 @@ const config: DataSourceOptions = {
   synchronize: isTest,
   logging: isTest,
   dropSchema: isTest,
+  ssl: false,
 };
 
 export const dataSource = new DataSource(config); 

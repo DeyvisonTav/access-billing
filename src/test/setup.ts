@@ -14,11 +14,11 @@ process.env.NODE_ENV = 'test';
 // Configuração do DataSource para testes
 export const testDataSource = new DataSource({
   type: 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432'),
-  username: process.env.DB_USER || 'docker',
-  password: process.env.DB_PASSWORD || 'docker',
-  database: process.env.DB_NAME || 'access-billing-test',
+  host: process.env.POSTGRES_HOST || 'localhost',
+  port: parseInt(process.env.POSTGRES_PORT || '5432'),
+  username: process.env.POSTGRES_USER || 'postgres',
+  password: process.env.POSTGRES_PASSWORD || 'postgres',
+  database: process.env.POSTGRES_DB || 'test_db',
   entities: [join(__dirname, '../**/*.entity{.ts,.js}')],
   synchronize: true,
 });

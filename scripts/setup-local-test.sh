@@ -1,11 +1,12 @@
 #!/bin/bash
 
-# Configuração do banco de dados de teste
+# Configurações do PostgreSQL
+export POSTGRES_HOST="localhost"
+export POSTGRES_PORT="5432"
 export POSTGRES_USER="postgres"
 export POSTGRES_PASSWORD="postgres"
 export POSTGRES_DB="access-billing"
-export POSTGRES_HOST="localhost"
-export POSTGRES_PORT="5432"
+export NODE_ENV="development"
 
 # Aguarda o PostgreSQL estar pronto
 echo "Aguardando PostgreSQL estar pronto..."

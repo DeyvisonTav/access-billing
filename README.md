@@ -70,7 +70,7 @@ Edite o arquivo `.env` com suas configurações.
 
 4. Inicie o banco de dados PostgreSQL com Docker Compose:
 ```bash
-docker-compose up -d
+docker-compose up -d db
 ```
 
 5. Execute as migrações do banco de dados:
@@ -85,7 +85,7 @@ yarn migration:run
 ### Desenvolvimento
 ```bash
 # Inicie o banco de dados (se ainda não estiver rodando)
-docker-compose up -d
+docker-compose up -d db
 
 # Execute a aplicação
 npm run start:dev
@@ -96,7 +96,7 @@ yarn start:dev
 ### Produção
 ```bash
 # Inicie o banco de dados (se ainda não estiver rodando)
-docker-compose up -d
+docker-compose up -d db
 
 # Execute a aplicação
 npm run build

@@ -52,15 +52,6 @@ jobs:
           flags: unittests
           name: codecov-umbrella
           yml: ./codecov.yml
-          functionalities:
-            - network
-            - gcov
-            - search
-            - coveragepy
-            - fix
-            - xcode
-            - gcove
-            - codecov
 
   build:
     needs: test

@@ -33,4 +33,12 @@ flags:
   unittests:
     paths:
       - src/
-    carryforward: true 
+    carryforward: true
+
+codecov:
+  require_ci_to_pass: true
+  bot: codecov-io
+  max_report_age: 12h
+  notify:
+    after_n_builds: 3
+    wait_for_ci: true 

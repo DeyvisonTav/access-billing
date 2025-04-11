@@ -1,14 +1,32 @@
+version: '3.8'
+
 services:
-  db:
-    image: bitnami/postgresql:latest
-    environment:
-      POSTGRES_USER: docker
-      POSTGRES_PASSWORD: docker
-      POSTGRES_DB: access-billing
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - 5432:5432
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/access-billing
+      - NODE_ENV=development
+    depends_on:
+      - db
     volumes:
-      - postgres_data:/bitnami/postgresql
+      - .:/app
+      - /app/node_modules
+    command: npm run start:dev
+
+  db:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=access-billing
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
   postgres_data:

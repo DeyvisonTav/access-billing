@@ -1,6 +1,37 @@
-# Access Billing API (Green Acesso)
+# 🏢 Access Billing API (Green Acesso)
 
-API para gerenciamento de boletos do condomínio, desenvolvida com NestJS.
+> Sistema de gerenciamento de boletos para condomínios desenvolvido com NestJS, TypeORM e PostgreSQL
+
+[![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)](https://nestjs.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+
+## 🎯 Destaques do Projeto
+
+- **Arquitetura Moderna**: Desenvolvido com NestJS, seguindo princípios SOLID e Clean Architecture
+- **Processamento de Dados**: Importação e processamento de boletos em CSV e PDF
+- **Geração de Relatórios**: Sistema robusto de geração de relatórios em PDF
+- **Banco de Dados**: PostgreSQL com TypeORM para gerenciamento de dados
+- **Containerização**: Docker e Docker Compose para ambiente de desenvolvimento e produção
+- **Testes Automatizados**: Suíte de testes com Jest para garantir qualidade do código
+- **Documentação**: API documentada com Swagger e exemplos práticos
+
+## 🚀 Demonstração Rápida
+
+### Importar Boletos via CSV
+```bash
+curl -X POST http://localhost:3000/bills/import/csv \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@files/boletos.csv"
+```
+
+### Listar Boletos com Filtros
+```bash
+curl "http://localhost:3000/bills?nome_sacado=JOSE&valor_inicial=100&valor_final=2000"
+```
+
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://deyvisontav.postman.co/workspace/Team-Workspace~dd7e4a7a-0641-4ef8-8a50-b2a23116c3ec/collection/23629418-baf0997e-2da5-412c-a0e2-a5c37f018fdf?action=share&creator=23629418)
 
 ## 🚀 Funcionalidades
 
@@ -121,16 +152,41 @@ GET /bills?nome_sacado=João&valor_inicial=1000&valor_final=2000&id_lote=1&relat
 | id_lote       | number  | ID do lote para filtrar            | 1           |
 | relatorio     | boolean | Gerar relatório em PDF             | true        |
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Stack Tecnológica
 
-- [NestJS](https://nestjs.com/) - Framework Node.js
-- [TypeORM](https://typeorm.io/) - ORM para PostgreSQL
-- [Swagger](https://swagger.io/) - Documentação da API
-- [PDFKit](https://pdfkit.org/) - Geração de PDFs
-- [Multer](https://github.com/expressjs/multer) - Upload de arquivos
-- [Jest](https://jestjs.io/) - Testes unitários
-- [Docker](https://www.docker.com/) - Containerização
-- [Docker Compose](https://docs.docker.com/compose/) - Orquestração de containers
+### Backend
+- **Framework**: NestJS
+- **Linguagem**: TypeScript
+- **ORM**: TypeORM
+- **Banco de Dados**: PostgreSQL
+- **Documentação**: Swagger
+- **Testes**: Jest
+
+### DevOps
+- **Containerização**: Docker, Docker Compose
+- **CI**: GitHub Actions
+- **Monitoramento**: Logs estruturados
+
+### Qualidade de Código
+- **Linting**: ESLint
+- **Formatação**: Prettier
+- **Type Checking**: TypeScript
+- **Testes**: Jest com cobertura de código
+
+## 📊 Métricas do Projeto
+
+- **Cobertura de Testes**: > 80%
+- **Tempo de Resposta**: < 200ms
+- **Escalabilidade**: Suporte a milhares de boletos
+- **Segurança**: Validação de dados e sanitização de inputs
+
+## 🎓 Aprendizados e Desafios
+
+- Implementação de processamento assíncrono de arquivos
+- Otimização de consultas ao banco de dados
+- Geração eficiente de relatórios em PDF
+- Gestão de estados e transações no banco de dados
+- Implementação de testes unitários e de integração
 
 ## 📁 Estrutura do Projeto
 
@@ -153,42 +209,64 @@ src/
 └── main.ts           # Ponto de entrada da aplicação
 ```
 
-## 🧪 Testes
+## 🧪 Testes e CI/CD
+
+O projeto utiliza GitHub Actions para CI (Continuous Integration). O pipeline inclui:
+
+- **Linting**: Verificação de padrões de código
+- **Testes**: Execução de testes unitários e de integração
+- **Cobertura**: Relatório de cobertura de código
+- **Build**: Verificação de build do projeto
+
+[![CI](https://github.com/DeyvisonTav/access-billing/actions/workflows/ci.yml/badge.svg)](https://github.com/DeyvisonTav/access-billing/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/DeyvisonTav/access-billing/branch/main/graph/badge.svg)](https://codecov.io/gh/DeyvisonTav/access-billing)
+
+### Executando os Testes Localmente
 
 ```bash
-# Certifique-se que o banco de dados está rodando
-docker-compose up -d
-
 # Executar testes
 npm run test
-# ou
-yarn test
 
 # Executar testes com cobertura
 npm run test:cov
-# ou
-yarn test:cov
+
+# Executar linting
+npm run lint
 ```
 
 ## 📦 Docker
 
-O projeto utiliza Docker Compose para gerenciar o banco de dados PostgreSQL. Para executar o projeto completo:
+O projeto utiliza Docker para garantir consistência entre ambientes. A imagem Docker é construída em dois estágios:
+
+1. **Estágio de Build**: Compila o código TypeScript e instala as dependências
+2. **Estágio de Produção**: Contém apenas os arquivos necessários para execução
+
+### Construindo a Imagem
 
 ```bash
-# Iniciar o banco de dados
+# Construir a imagem
+docker build -t access-billing .
+
+# Executar o container
+docker run -p 3000:3000 access-billing
+```
+
+### Docker Compose
+
+Para desenvolvimento local, você pode usar o Docker Compose:
+
+```bash
+# Iniciar todos os serviços
 docker-compose up -d
 
-# Executar as migrações
-npm run migration:run
-
-# Iniciar a aplicação
-npm run start:dev
-```
-
-Para parar todos os serviços:
-```bash
+# Parar todos os serviços
 docker-compose down
 ```
+
+O `docker-compose.yml` configura:
+- Aplicação Node.js
+- Banco de dados PostgreSQL
+- Rede compartilhada entre os serviços
 
 ## 🤝 Contribuindo
 

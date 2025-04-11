@@ -1,14 +1,20 @@
 #!/bin/bash
 
-# Configurações do banco de dados
-DB_NAME="access-billing-test"
-DB_USER="docker"
-DB_PASSWORD="docker"
-DB_HOST="localhost"
-DB_PORT="5432"
+# Configuração do banco de dados de teste
+export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/test_db"
 
-# Cria o banco de dados de teste
-PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres -c "DROP DATABASE IF EXISTS \"$DB_NAME\";"
-PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres -c "CREATE DATABASE \"$DB_NAME\";"
+# Aguarda o PostgreSQL estar pronto
+echo "Aguardando PostgreSQL estar pronto..."
+while ! pg_isready -h localhost -p 5432 -U postgres; do
+  sleep 1
+done
 
-echo "Banco de dados de teste configurado com sucesso!" 
+# Cria o banco de dados de teste se não existir
+echo "Criando banco de dados de teste..."
+psql -h localhost -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'test_db'" | grep -q 1 || psql -h localhost -U postgres -c "CREATE DATABASE test_db"
+
+# Executa as migrações
+echo "Executando migrações..."
+npm run migration:run
+
+echo "Setup do banco de dados concluído!" 

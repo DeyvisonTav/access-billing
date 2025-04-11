@@ -16,6 +16,7 @@
     "test": "npm run test:setup && jest --detectOpenHandles --forceExit",
     "test:watch": "npm run test:setup && jest --watch --detectOpenHandles --forceExit",
     "test:cov": "jest --coverage",
+    "test:ci": "npm run test:setup && jest --coverage --ci --detectOpenHandles --forceExit",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "ts-node ./node_modules/typeorm/cli",

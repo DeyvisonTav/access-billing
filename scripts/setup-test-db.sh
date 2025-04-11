@@ -3,7 +3,7 @@
 # Configuração do banco de dados de teste
 export POSTGRES_USER="postgres"
 export POSTGRES_PASSWORD="postgres"
-export POSTGRES_DB="access-billing-test"
+export POSTGRES_DB="test_db"
 export POSTGRES_HOST="localhost"
 export POSTGRES_PORT="5432"
 
@@ -15,7 +15,7 @@ done
 
 # Cria o banco de dados de teste se não existir
 echo "Criando banco de dados de teste..."
-psql -h localhost -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'access-billing-test'" | grep -q 1 || psql -h localhost -U postgres -c "CREATE DATABASE \"access-billing-test\""
+psql -h localhost -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'test_db'" | grep -q 1 || psql -h localhost -U postgres -c "CREATE DATABASE test_db"
 
 # Executa as migrações
 echo "Executando migrações..."

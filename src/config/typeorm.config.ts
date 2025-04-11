@@ -12,7 +12,7 @@ const config: DataSourceOptions = {
   port: parseInt(process.env.POSTGRES_PORT || '5432'),
   username: isTest ? 'postgres' : process.env.POSTGRES_USER || 'postgres',
   password: isTest ? 'postgres' : process.env.POSTGRES_PASSWORD || 'postgres',
-  database: isTest ? 'access-billing-test' : process.env.POSTGRES_DB || 'access-billing',
+  database: isTest ? 'test_db' : process.env.POSTGRES_DB || 'access-billing',
   entities: [path.join(__dirname, '../**/*.entity{.ts,.js}')],
   migrations: [path.join(__dirname, '../migrations/*{.ts,.js}')],
   synchronize: isTest,

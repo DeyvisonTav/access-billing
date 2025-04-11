@@ -44,6 +44,8 @@ jobs:
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
@@ -51,7 +53,6 @@ jobs:
           verbose: true
           flags: unittests
           name: codecov-umbrella
-          yml: ./codecov.yml
 
   build:
     needs: test

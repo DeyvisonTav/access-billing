@@ -15,7 +15,11 @@ done
 
 # Cria o banco de dados de teste se não existir
 echo "Criando banco de dados de teste..."
-psql -h localhost -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'access-billing'" | grep -q 1 || psql -h localhost -U postgres -c "CREATE DATABASE access-billing"
+PGPASSWORD=$POSTGRES_PASSWORD psql -h localhost -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = '$POSTGRES_DB'" | grep -q 1 || PGPASSWORD=$POSTGRES_PASSWORD psql -h localhost -U postgres -c "CREATE DATABASE \"$POSTGRES_DB\""
+
+# Verifica se o banco foi criado
+echo "Verificando se o banco foi criado..."
+PGPASSWORD=$POSTGRES_PASSWORD psql -h localhost -U postgres -d $POSTGRES_DB -c "SELECT 1" || exit 1
 
 # Executa as migrações
 echo "Executando migrações..."

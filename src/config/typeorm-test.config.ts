@@ -10,9 +10,10 @@ const config: DataSourceOptions = {
   database: process.env.POSTGRES_DB || 'access-billing',
   entities: [path.join(__dirname, '../**/*.entity{.ts,.js}')],
   migrations: [path.join(__dirname, '../migrations/*{.ts,.js}')],
-  synchronize: true,
+  synchronize: false,
   dropSchema: true,
-  logging: false,
+  logging: true,
+  migrationsRun: true,
 };
 
 export const testDataSource = new DataSource(config); 
